@@ -25,7 +25,7 @@ public static class Uninstaller
             using var k = Registry.CurrentUser.CreateSubKey(KeyPath);
             k.SetValue("DisplayName", Paths.AppName);
             k.SetValue("DisplayIcon", exe + ",0");
-            k.SetValue("DisplayVersion", typeof(Uninstaller).Assembly.GetName().Version?.ToString(3) ?? "2.0.0");
+            k.SetValue("DisplayVersion", typeof(Uninstaller).Assembly.GetName().Version?.ToString(3) ?? "1.0.0");
             k.SetValue("Publisher", Paths.AppName);
             k.SetValue("InstallLocation", Path.GetDirectoryName(exe) ?? "");
             k.SetValue("UninstallString", $"\"{exe}\" {Arg}");
