@@ -1,0 +1,22 @@
+<UserControl x:Class="DesktopPanel.UI.Overlay.ConfirmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:DesktopPanel.Core.Localization"
+             xmlns:controls="clr-namespace:DesktopPanel.UI.Controls">
+    <StackPanel>
+        <Border x:Name="Card" Style="{StaticResource Plate}" Padding="16,14">
+            <StackPanel>
+                <TextBlock x:Name="TitleBlock" Style="{StaticResource TitleText}" Margin="0,0,0,10" />
+                <TextBlock x:Name="BodyText" Style="{StaticResource RowSubText}" FontSize="13" LineHeight="19" />
+                <controls:Row x:Name="OptionRow" Margin="0,14,0,0" Visibility="Collapsed">
+                    <CheckBox x:Name="OptionSwitch" Style="{StaticResource ToggleSwitch}" />
+                </controls:Row>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                    <Button x:Name="CancelButton" Style="{StaticResource PanelButton}" Margin="0,0,8,0"
+                            Content="{loc:L confirm.cancel}" Click="Cancel_Click" />
+                    <Button x:Name="OkButton" Style="{StaticResource DangerButton}" Click="Ok_Click" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

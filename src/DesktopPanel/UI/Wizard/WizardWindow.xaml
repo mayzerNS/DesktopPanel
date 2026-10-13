@@ -1,0 +1,91 @@
+<Window x:Class="DesktopPanel.UI.Wizard.WizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:DesktopPanel.Core.Localization"
+        xmlns:controls="clr-namespace:DesktopPanel.UI.Controls"
+        Title="DesktopPanel" Width="660" Height="460"
+        WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="True" Topmost="True"
+        WindowStartupLocation="CenterScreen" Background="Transparent" Foreground="White"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13" UseLayoutRounding="True">
+    <Grid>
+        <!-- как у панели: размытие Windows, затемнение («Затемнение» из настроек) и тонкая светлая обводка по краю окна
+             (системную рамку Glass.Prepare убирает — без своей окно было без кромки) -->
+        <Border x:Name="Tint" Background="Black" Opacity="0.4" IsHitTestVisible="False" />
+        <Border x:Name="OuterFrame" BorderBrush="{StaticResource WindowFrameBrush}" BorderThickness="1" IsHitTestVisible="False"
+                Panel.ZIndex="10" />
+        <DockPanel Margin="28,22,28,22">
+            <!-- шапка: шаги -->
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,18" Background="Transparent" MouseLeftButtonDown="Header_MouseDown">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource TitleText}" FontSize="20" Text="{loc:L wizard.title}" />
+                    <TextBlock x:Name="StepText" Style="{StaticResource RowSubText}" Margin="0,4,0,0" />
+                </StackPanel>
+            </Grid>
+
+            <!-- кнопки -->
+            <Grid DockPanel.Dock="Bottom" Margin="0,16,0,0">
+                <Button x:Name="BackButton" Style="{StaticResource PanelButton}" HorizontalAlignment="Left"
+                        Content="{loc:L wizard.back}" Click="Back_Click" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="SkipButton" Style="{StaticResource PanelButton}" Margin="0,0,8,0"
+                            Content="{loc:L wizard.skip}" Click="Skip_Click" />
+                    <Button x:Name="NextButton" Style="{StaticResource AccentButton}" MinWidth="120"
+                                  Click="Next_Click" />
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <!-- 1. язык -->
+                <StackPanel x:Name="PageLanguage">
+                    <TextBlock Style="{StaticResource RowTitleText}" FontSize="16" Text="{loc:L wizard.lang.title}" />
+                    <TextBlock Style="{StaticResource RowSubText}" Margin="0,4,0,16" Text="{loc:L wizard.lang.sub}" />
+                    <StackPanel x:Name="LanguageButtons" Orientation="Horizontal" />
+                </StackPanel>
+
+                <!-- 2. Zapret -->
+                <StackPanel x:Name="PageZapret" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource RowTitleText}" FontSize="16" Text="{loc:L wizard.zapret.title}" />
+                    <TextBlock Style="{StaticResource RowSubText}" Margin="0,4,0,16" Text="{loc:L wizard.zapret.sub}" />
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton x:Name="ZapretYes" Style="{StaticResource PanelToggle}" Margin="0,0,8,0" MinWidth="140"
+                                      Content="{loc:L wizard.zapret.yes}" Click="ZapretChoice_Click" />
+                        <ToggleButton x:Name="ZapretNo" Style="{StaticResource PanelToggle}" MinWidth="140"
+                                      Content="{loc:L wizard.zapret.no}" Click="ZapretChoice_Click" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource RowSubText}" Margin="0,16,0,0" Text="{loc:L wizard.zapret.note}" />
+                </StackPanel>
+
+                <!-- 3. сочетание клавиш -->
+                <StackPanel x:Name="PageHotkey" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource RowTitleText}" FontSize="16" Text="{loc:L wizard.hotkey.title}" />
+                    <TextBlock Style="{StaticResource RowSubText}" Margin="0,4,0,16" Text="{loc:L wizard.hotkey.sub}" />
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton x:Name="WinToggle" Style="{StaticResource PanelToggle}" Content="Win" Margin="0,0,6,0"
+                                      Click="WinToggle_Click" />
+                        <controls:HotkeyBox x:Name="HotkeyInput" Style="{StaticResource InputBox}" Width="200"
+                                            HorizontalContentAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock x:Name="HotkeyStatus" Style="{StaticResource RowSubText}" Margin="0,12,0,0" />
+                    <controls:Row Title="{loc:L settings.takeover}" Sub="{loc:L settings.takeover.sub}" Margin="0,12,0,0"
+                                  Help="takeover">
+                        <CheckBox x:Name="TakeoverSwitch" Style="{StaticResource ToggleSwitch}" Click="Takeover_Click" />
+                    </controls:Row>
+                </StackPanel>
+
+                <!-- 4. автозапуск -->
+                <StackPanel x:Name="PageAutostart" Visibility="Collapsed">
+                    <controls:Row Title="{loc:L settings.autostart}" Sub="{loc:L wizard.autostart.sub}">
+                        <CheckBox x:Name="AutostartSwitch" Style="{StaticResource ToggleSwitch}" />
+                    </controls:Row>
+                </StackPanel>
+
+                <!-- 5. готово -->
+                <StackPanel x:Name="PageDone" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource RowTitleText}" FontSize="16" Text="{loc:L wizard.done.title}" />
+                    <TextBlock x:Name="DoneText" Style="{StaticResource RowSubText}" Margin="0,8,0,0" FontSize="13"
+                               LineHeight="20" />
+                </StackPanel>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

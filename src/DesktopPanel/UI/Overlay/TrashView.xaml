@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="DesktopPanel.UI.Overlay.TrashView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:DesktopPanel.Core.Localization"
+             xmlns:controls="clr-namespace:DesktopPanel.UI.Controls"
+             xmlns:theme="clr-namespace:DesktopPanel.UI.Theme"
+             Focusable="True">
+    <DockPanel>
+        <!-- верх: поиск, сводка, кнопки -->
+        <Grid x:Name="TopBar" DockPanel.Dock="Top" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FilterBox" Style="{StaticResource InputBox}" Tag="{loc:L trash.search}"
+                     TextChanged="FilterBox_TextChanged" />
+            <TextBlock x:Name="InfoText" Grid.Column="1" Style="{StaticResource RowSubText}" Margin="12,0"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button x:Name="RestoreButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0" IsEnabled="False"
+                        Content="{loc:L trash.restore}" Click="Restore_Click" />
+                <Button x:Name="RestoreAllButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0" IsEnabled="False"
+                        Content="{loc:L trash.restore_all}" Click="RestoreAll_Click" />
+                <Button x:Name="DeleteButton" Style="{StaticResource DangerButton}" Margin="0,0,6,0" IsEnabled="False"
+                        Content="{loc:L trash.delete}" Click="Delete_Click" />
+                <Button x:Name="EmptyButton" Style="{StaticResource DangerButton}" IsEnabled="False"
+                        Content="{loc:L trash.empty}" Click="Empty_Click" />
+            </StackPanel>
+        </Grid>
+
+        <!-- шапка таблицы: щелчок — сортировка -->
+        <Grid x:Name="HeaderGrid" DockPanel.Dock="Top" Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="90" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <Grid>
+            <ScrollViewer x:Name="Scroll" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="102">
+                <ItemsControl x:Name="RowsList" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border x:Name="Row" Background="Transparent" CornerRadius="6" Height="34"
+                                    MouseLeftButtonDown="Row_MouseDown" MouseRightButtonUp="Row_RightClick">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="240" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="90" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- наведение и выделение — слоями, проявляются плавно (Fx.Show), как у кнопок и пунктов меню -->
+                                    <Border Grid.ColumnSpan="4" CornerRadius="6" Background="{StaticResource ControlFillBrush}" Opacity="0"
+                                            IsHitTestVisible="False" theme:Fx.Show="{Binding IsMouseOver, ElementName=Row}" />
+                                    <Border Grid.ColumnSpan="4" CornerRadius="6" Background="#38FFFFFF" Opacity="0"
+                                            IsHitTestVisible="False" theme:Fx.Show="{Binding IsSelected}" />
+                                    <!-- отступы колонок = отступу текста в кнопках-заголовках (поле 1 + рамка 1 + отступ 10 = 12): подписи строк стоят ровно под заголовками -->
+                                    <StackPanel Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center">
+                                        <Grid Width="26" Height="22" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Glyph}" FontFamily="{StaticResource GlyphFont}" FontSize="16"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#D0FFFFFF"
+                                                       Visibility="{Binding GlyphVisibility}" />
+                                            <Image Source="{Binding Icon}" Width="20" Height="20" HorizontalAlignment="Left"
+                                                   Visibility="{Binding IconVisibility}" RenderOptions.BitmapScalingMode="HighQuality" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Origin}" Style="{StaticResource RowSubText}"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="12,0,12,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Deleted}" Style="{StaticResource RowSubText}"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="12,0,12,0" />
+                                    <TextBlock Grid.Column="3" Text="{Binding SizeText}" Style="{StaticResource RowSubText}"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="12,0,12,0" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+            <TextBlock x:Name="EmptyText" Style="{StaticResource RowSubText}" FontSize="14" Visibility="Collapsed"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Grid>
+    </DockPanel>
+</UserControl>

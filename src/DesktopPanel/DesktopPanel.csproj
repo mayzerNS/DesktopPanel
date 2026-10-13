@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- 10.0.19041 — чтобы были доступны API Windows 10/11 (цвет акцента и т.п.) -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <!-- только ради иконки в трее (NotifyIcon) -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <!-- общие using перечислены в GlobalUsings.cs: так WPF и WinForms точно не путаются (Application, Color…) -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <AssemblyName>DesktopPanel</AssemblyName>
+    <RootNamespace>DesktopPanel</RootNamespace>
+    <Product>DesktopPanel</Product>
+    <Version>2.0.0</Version>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- один exe, внутри которого всё: .NET ставить не нужно -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+    <SatelliteResourceLanguages>ru;en</SatelliteResourceLanguages>
+    <!-- предкомпиляция (ReadyToRun): код программы и WebView2 уже в машинных командах, первое открытие окон без задержки
+         на JIT. Работает и при publish, и при обычной сборке (цель ReadyToRunOnBuild ниже). Файлы .NET уже предкомпилированы. -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunComposite>false</PublishReadyToRunComposite>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- мини-браузер: движок Edge (WebView2), который уже есть в Windows 10/11 -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <!-- поиск по системе: индекс поиска Windows отдаётся через OLE DB -->
+    <PackageReference Include="System.Data.OleDb" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- словари строк: Strings/ru.json, Strings/en.json -->
+    <EmbeddedResource Include="Strings\*.json" LogicalName="Strings.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Assets\icon.ico" LogicalName="Assets.icon.ico" />
+  </ItemGroup>
+
+  <!-- dotnet build сам ReadyToRun не делает — после сборки Release предкомпилируем свои сборки и кладём поверх IL-версий -->
+  <Target Name="ReadyToRunOnBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(_IsPublishing)' != 'true'" DependsOnTargets="ComputeResolvedFilesToPublishList;CreateReadyToRunImages">
+    <Copy SourceFiles="@(_ReadyToRunCompileList->'%(OutputR2RImage)')" DestinationFolder="$(OutDir)" />
+  </Target>
+
+</Project>

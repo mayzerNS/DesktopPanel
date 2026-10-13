@@ -1,0 +1,211 @@
+<UserControl x:Class="DesktopPanel.UI.Overlay.ZapretView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:DesktopPanel.Core.Localization"
+             xmlns:controls="clr-namespace:DesktopPanel.UI.Controls">
+    <DockPanel x:Name="Layout">
+        <!-- вкладки -->
+        <controls:Segmented x:Name="Tabs" DockPanel.Dock="Top" Margin="0,0,0,8" />
+
+        <!-- ошибка / итог последнего действия — видны на всех вкладках -->
+        <StackPanel x:Name="Pills" DockPanel.Dock="Top">
+            <Border x:Name="ErrorPill" Background="#33D63030" BorderBrush="#80F06E64" BorderThickness="1"
+                    CornerRadius="10" Padding="14,8" Margin="0,0,0,8" Visibility="Collapsed">
+                <TextBlock x:Name="ErrorText" TextWrapping="Wrap" Foreground="#FFFFD0CC" />
+            </Border>
+            <!-- работает VPN в режиме туннеля: Zapret, скорее всего, не нужен и может мешать -->
+            <Border x:Name="VpnPill" Background="#2AE0B040" BorderBrush="#70E0B040" BorderThickness="1"
+                    CornerRadius="10" Padding="14,8" Margin="0,0,0,8" Visibility="Collapsed">
+                <TextBlock x:Name="VpnText" TextWrapping="Wrap" Foreground="#FFFFF0CC" />
+            </Border>
+            <Border x:Name="NoticePill" Background="#2A5CD67A" BorderBrush="#705CD67A" BorderThickness="1"
+                    CornerRadius="10" Padding="14,8" Margin="0,0,0,8" Visibility="Collapsed">
+                <TextBlock x:Name="NoticeText" TextWrapping="Wrap" Foreground="#FFD8FFE0" />
+            </Border>
+        </StackPanel>
+
+        <Grid>
+            <!-- ===== Основное ===== -->
+            <ScrollViewer x:Name="MainTab" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90">
+                <StackPanel>
+                    <controls:Row x:Name="StatusRow" Help="z_toggle">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="RestartButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0"
+                                    Content="{loc:L zapret.restart}" Click="Restart_Click" />
+                            <ToggleButton x:Name="OnOffButton" Style="{StaticResource PanelToggle}" MinWidth="110"
+                                          Click="Toggle_Click" />
+                        </StackPanel>
+                    </controls:Row>
+
+                    <controls:Box Title="{loc:L zapret.strategy}" Help="z_strategy">
+                        <TextBlock Style="{StaticResource RowSubText}" Margin="0,0,0,8"
+                                   Text="{loc:L zapret.strategy.sub}" />
+                        <UniformGrid x:Name="StrategyGrid" Columns="2" />
+                    </controls:Box>
+
+                    <controls:Box x:Name="GameBox" Title="{loc:L zapret.game}" Help="z_game">
+                        <controls:Box.HeaderRight>
+                            <controls:Segmented x:Name="GameSeg" />
+                        </controls:Box.HeaderRight>
+                        <TextBlock Style="{StaticResource RowSubText}" Margin="0,0,0,8" Text="{loc:L zapret.game.sub}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource RowSubText}" VerticalAlignment="Center"
+                                       Text="{loc:L zapret.game.ports}" />
+                            <controls:HelpDot Key="z_ports" Margin="6,0,10,0" />
+                            <controls:Segmented x:Name="PortsSeg" />
+                            <Button x:Name="PortsEditButton" Style="{StaticResource PanelButton}" Margin="4,0,0,0"
+                                    Content="{loc:L zapret.game.edit}" Click="PortsEdit_Click" />
+                            <controls:HelpDot Key="z_ports_edit" />
+                            <TextBlock x:Name="GameLabel" Style="{StaticResource RowSubText}" Margin="10,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </controls:Box>
+
+                    <controls:Box x:Name="IpsetBox" Title="{loc:L zapret.ipset}" Help="z_ipset">
+                        <controls:Box.HeaderRight>
+                            <controls:Segmented x:Name="IpsetSeg" />
+                        </controls:Box.HeaderRight>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="IpsetLabel" Style="{StaticResource RowSubText}" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button x:Name="IpsetUpdateButton" Style="{StaticResource PanelButton}"
+                                        Content="{loc:L zapret.ipset.update}" Click="IpsetUpdate_Click" />
+                                <controls:HelpDot Key="z_ipset_upd" />
+                            </StackPanel>
+                        </Grid>
+                    </controls:Box>
+
+                    <controls:Row x:Name="UpdateRow" Title="{loc:L zapret.autoupdate}" Help="z_autoupd">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CheckNowButton" Style="{StaticResource PanelButton}" Margin="0,0,12,0"
+                                    Content="{loc:L zapret.autoupdate.check}" Click="CheckNow_Click" />
+                            <CheckBox x:Name="AutoUpdateSwitch" Style="{StaticResource ToggleSwitch}"
+                                      VerticalAlignment="Center" Click="AutoUpdate_Click" />
+                        </StackPanel>
+                    </controls:Row>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ===== Тест стратегий ===== -->
+            <ScrollViewer x:Name="TestTab" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90" Visibility="Collapsed">
+                <StackPanel>
+                    <controls:Box Title="{loc:L zapret.test}" Help="z_test">
+                        <TextBlock Style="{StaticResource RowSubText}" Margin="0,0,0,8" Text="{loc:L zapret.test.sub}" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="TestButton" Style="{StaticResource PanelButton}"
+                                    Content="{loc:L zapret.test.run}" Click="Test_Click" />
+                            <Button x:Name="TestStopButton" Style="{StaticResource DangerButton}"
+                                    Content="{loc:L zapret.test.stop}" Click="TestStop_Click" Visibility="Collapsed" />
+                            <TextBlock x:Name="TestStatus" Style="{StaticResource RowSubText}" Margin="12,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </controls:Box>
+
+                    <StackPanel x:Name="TestList" />
+
+                    <controls:Box Title="{loc:L zapret.test.log}">
+                        <controls:Box.HeaderRight>
+                            <Button Style="{StaticResource PanelButton}" Content="{loc:L zapret.open_file}"
+                                    Click="OpenTestLog_Click" />
+                        </controls:Box.HeaderRight>
+                        <TextBox x:Name="TestLogBox" IsReadOnly="True" Height="190" TextWrapping="NoWrap"
+                                 FontFamily="Cascadia Mono, Consolas" FontSize="12" Foreground="#D8FFFFFF"
+                                 Background="#22000000" BorderThickness="0" Padding="8,6"
+                                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                 SelectionBrush="{DynamicResource AccentBrush}" />
+                    </controls:Box>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ===== Списки ===== -->
+            <ScrollViewer x:Name="ListsTab" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90" Visibility="Collapsed">
+                <StackPanel>
+                    <StackPanel x:Name="UserListRows" />
+                    <controls:Row Title="{loc:L zapret.lists.builtin}" Sub="{loc:L zapret.lists.builtin.sub}"
+                                  Help="l_builtin">
+                        <Button Style="{StaticResource PanelButton}" Content="{loc:L zapret.open_folder}"
+                                Click="OpenListsFolder_Click" />
+                    </controls:Row>
+                    <controls:Row Title="{loc:L zapret.lists.apply}" Sub="{loc:L zapret.lists.apply.sub}" Help="l_apply">
+                        <Button x:Name="ApplyListsButton" Style="{StaticResource PanelButton}"
+                                Content="{loc:L zapret.lists.apply.button}" Click="ApplyLists_Click" />
+                    </controls:Row>
+                    <controls:Box Title="{loc:L zapret.hosts}" Help="l_hosts">
+                        <TextBlock x:Name="HostsLabel" Style="{StaticResource RowSubText}" Margin="0,0,0,8" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="HostsCheckButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0"
+                                    Content="{loc:L zapret.hosts.check}" Click="HostsCheck_Click" />
+                            <Button x:Name="HostsAddButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0"
+                                    Content="{loc:L zapret.hosts.add}" Click="HostsAdd_Click" />
+                            <Button x:Name="HostsRemoveButton" Style="{StaticResource PanelButton}"
+                                    Content="{loc:L zapret.hosts.remove}" Click="HostsRemove_Click" />
+                        </StackPanel>
+                    </controls:Box>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ===== Диагностика ===== -->
+            <ScrollViewer x:Name="DiagTab" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90" Visibility="Collapsed">
+                <StackPanel>
+                    <controls:Box Title="{loc:L zapret.diag}" Help="d_diag">
+                        <TextBlock Style="{StaticResource RowSubText}" Margin="0,0,0,8" Text="{loc:L zapret.diag.sub}" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="DiagButton" Style="{StaticResource PanelButton}"
+                                    Content="{loc:L zapret.diag.run}" Click="Diag_Click" />
+                            <TextBlock x:Name="DiagStatus" Style="{StaticResource RowSubText}" Margin="12,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </controls:Box>
+                    <StackPanel x:Name="DiagList" />
+                    <controls:Row Title="{loc:L zapret.cache}" Sub="{loc:L zapret.cache.sub}" Help="d_cache">
+                        <Button x:Name="CacheButton" Style="{StaticResource PanelButton}"
+                                Content="{loc:L zapret.cache.button}" Click="Cache_Click" />
+                    </controls:Row>
+                    <controls:Row x:Name="DefenderRow" Title="{loc:L zapret.defender}" Sub="{loc:L zapret.defender.sub}"
+                                  Help="d_defender">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{StaticResource PanelButton}" Margin="0,0,6,0"
+                                    Content="{loc:L zapret.defender.copy}" Click="DefenderCopy_Click" />
+                            <Button Style="{StaticResource PanelButton}" Content="{loc:L zapret.defender.open}"
+                                    Click="DefenderOpen_Click" />
+                        </StackPanel>
+                    </controls:Row>
+                    <controls:Row Title="{loc:L zapret.winws_log}" Sub="{loc:L zapret.winws_log.sub}" Help="d_log">
+                        <Button Style="{StaticResource PanelButton}" Content="{loc:L zapret.open_file}"
+                                Click="OpenWinwsLog_Click" />
+                    </controls:Row>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ===== Дополнительно ===== -->
+            <ScrollViewer x:Name="ExtraTab" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90" Visibility="Collapsed">
+                <StackPanel>
+                    <controls:Row x:Name="ServiceRow" Title="{loc:L zapret.service}" Help="x_service">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="ServiceInstallButton" Style="{StaticResource PanelButton}" Margin="0,0,6,0"
+                                    Click="ServiceInstall_Click" />
+                            <Button x:Name="ServiceRemoveButton" Style="{StaticResource PanelButton}"
+                                    Content="{loc:L zapret.service.remove}" Click="ServiceRemove_Click" />
+                        </StackPanel>
+                    </controls:Row>
+                    <controls:Box Title="{loc:L zapret.fakes}" Help="x_fakes">
+                        <TextBlock Style="{StaticResource RowSubText}" Margin="0,0,0,8" Text="{loc:L zapret.fakes.sub}" />
+                        <StackPanel x:Name="FakeRows" />
+                    </controls:Box>
+                    <controls:Row Title="{loc:L zapret.folder}" Help="x_folder">
+                        <Button Style="{StaticResource PanelButton}" Content="{loc:L zapret.open_folder}"
+                                Click="OpenFolder_Click" />
+                    </controls:Row>
+                    <controls:Row Title="{loc:L zapret.uninstall}" Sub="{loc:L zapret.uninstall.sub}">
+                        <Button x:Name="UninstallButton" Style="{StaticResource DangerButton}"
+                                Content="{loc:L zapret.uninstall.button}" Click="Uninstall_Click" />
+                    </controls:Row>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

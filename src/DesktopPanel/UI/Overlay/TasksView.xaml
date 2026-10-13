@@ -1,0 +1,105 @@
+<UserControl x:Class="DesktopPanel.UI.Overlay.TasksView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:DesktopPanel.Core.Localization"
+             xmlns:controls="clr-namespace:DesktopPanel.UI.Controls"
+             xmlns:theme="clr-namespace:DesktopPanel.UI.Theme">
+    <UserControl.Resources>
+        <Style x:Key="CellText" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+            <Setter Property="Typography.NumeralAlignment" Value="Tabular" />
+        </Style>
+    </UserControl.Resources>
+    <DockPanel>
+        <!-- верх: поиск, сводка, кнопки -->
+        <Grid x:Name="TopBar" DockPanel.Dock="Top" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FilterBox" Style="{StaticResource InputBox}" Tag="{loc:L tasks.search}"
+                     TextChanged="FilterBox_TextChanged" />
+            <TextBlock x:Name="InfoText" Grid.Column="1" Style="{StaticResource RowSubText}" Margin="12,0"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button x:Name="EndButton" Style="{StaticResource DangerButton}" Margin="0,0,6,0" IsEnabled="False"
+                        Content="{loc:L tasks.end}" Click="End_Click" />
+                <Button Style="{StaticResource PanelButton}" Margin="0,0,6,0" Content="{loc:L tasks.run}"
+                        Click="Run_Click" />
+                <Button x:Name="WinTasksButton" Style="{StaticResource PanelButton}" Content="{loc:L tasks.windows}"
+                        Click="WindowsTaskManager_Click" />
+            </StackPanel>
+        </Grid>
+
+        <!-- шапка таблицы: щелчок — сортировка -->
+        <Grid x:Name="HeaderGrid" DockPanel.Dock="Top" Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="96" />
+                <ColumnDefinition Width="110" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <ScrollViewer x:Name="Scroll" Style="{StaticResource PageScroll}" controls:SmoothScroll.Step="90">
+            <ItemsControl x:Name="RowsList" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="Row" Background="Transparent" CornerRadius="6" Height="{Binding Height}"
+                                theme:Tips.Info="True"
+                                MouseLeftButtonDown="Row_MouseDown" MouseRightButtonUp="Row_RightClick"
+                                ToolTip="{Binding Tip}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="96" />
+                                    <ColumnDefinition Width="110" />
+                                </Grid.ColumnDefinitions>
+                                <!-- наведение и выделение — слоями, проявляются плавно (Fx.Show), как у кнопок и пунктов меню;
+                                     у заголовков разделов наведения нет — их не выбрать -->
+                                <Border Grid.ColumnSpan="5" CornerRadius="6" Background="{StaticResource ControlFillBrush}" Opacity="0"
+                                        IsHitTestVisible="False" Visibility="{Binding IconVisibility}"
+                                        theme:Fx.Show="{Binding IsMouseOver, ElementName=Row}" />
+                                <Border Grid.ColumnSpan="5" CornerRadius="6" Background="#38FFFFFF" Opacity="0"
+                                        IsHitTestVisible="False" theme:Fx.Show="{Binding IsSelected}" />
+                                <StackPanel Orientation="Horizontal" Margin="{Binding Indent}" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Arrow}" FontFamily="{StaticResource GlyphFont}" FontSize="9"
+                                               Width="16" VerticalAlignment="Center" Foreground="#B0FFFFFF" />
+                                    <Image Source="{Binding Icon}" Width="18" Height="18" Margin="0,0,8,0"
+                                           Visibility="{Binding IconVisibility}" RenderOptions.BitmapScalingMode="HighQuality" />
+                                    <TextBlock Text="{Binding Title}" FontWeight="{Binding Weight}" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Count}" Foreground="#99FFFFFF" Margin="6,0,0,0"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="{Binding CpuHeat}" Margin="1,1">
+                                    <TextBlock Text="{Binding Cpu}" Style="{StaticResource CellText}" />
+                                </Border>
+                                <Border Grid.Column="2" Background="{Binding MemHeat}" Margin="1,1">
+                                    <TextBlock Text="{Binding Mem}" Style="{StaticResource CellText}" />
+                                </Border>
+                                <Border Grid.Column="3" Background="{Binding DiskHeat}" Margin="1,1">
+                                    <TextBlock Text="{Binding Disk}" Style="{StaticResource CellText}" />
+                                </Border>
+                                <Border Grid.Column="4" Background="{Binding NetHeat}" Margin="1,1">
+                                    <TextBlock Text="{Binding Net}" Style="{StaticResource CellText}" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
