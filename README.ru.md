@@ -57,10 +57,12 @@ dotnet publish src\DesktopPanel\DesktopPanel.csproj -c Release -o dist
 
 Результат: `dist\DesktopPanel.exe` (самодостаточный, один файл). Или `build.bat`.
 
-Зависимости (NuGet): Microsoft.Web.WebView2, NAudio.Wasapi, System.Data.OleDb.
+Зависимости (NuGet): Microsoft.Web.WebView2, NAudio.Wasapi, System.Data.OleDb. Лицензии: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Лицензия
 
 [GPL-3.0](LICENSE). Copyright © 2026 mayzerNS.
 
 Копии и изменённые версии распространяются только под GPL-3.0, с исходным кодом и указанием автора.
+
+Сторонние компоненты (.NET, NAudio, WebView2 SDK) — MIT / BSD, см. [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
